@@ -23,18 +23,18 @@ namespace NetConfAPI.Controllers
 
         // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> Getproducts()
+        public async Task<ActionResult<IEnumerable<ProductDTO>>> Getproducts()
         {
-            return await _context.products
-                .Include(x => x.Category)
+            return await _context.Products
+                .Select<Product, ProductDTO>(p => p)
                 .ToListAsync();
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProduct(int id)
+        public async Task<ActionResult<ProductDTO>> GetProduct(int id)
         {
-            var product = await _context.products.FindAsync(id);
+            ProductDTO product = await _context.Products.FindAsync(id);
 
             if (product == null)
             {
@@ -80,7 +80,7 @@ namespace NetConfAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
-            _context.products.Add(product);
+            _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduct", new { id = product.Id }, product);
@@ -90,13 +90,13 @@ namespace NetConfAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _context.products.FindAsync(id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            _context.products.Remove(product);
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -104,7 +104,7 @@ namespace NetConfAPI.Controllers
 
         private bool ProductExists(int id)
         {
-            return _context.products.Any(e => e.Id == id);
+            return _context.Products.Any(e => e.Id == id);
         }
     }
 }

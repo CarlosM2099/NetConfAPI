@@ -24,13 +24,15 @@ namespace NetConfAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Category>>> GetCategories() => await _context.Categories
-            .ToListAsync();
+        public async Task<ActionResult<List<CategoryDTO>>> GetCategories()
+        {
+            return await _context.Categories.Select<Category, CategoryDTO>(c => c).ToListAsync();
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Category>> GetCategory(int id)
+        public async Task<ActionResult<CategoryDTO>> GetCategory(int id)
         {
-            return await _context.Categories.FindAsync(id);
+            return await _context.Categories.Select(c => new CategoryDTO(c.Id, c.Name, c.Description, c.Picture)).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         [HttpPost]
@@ -46,7 +48,7 @@ namespace NetConfAPI.Controllers
         {
             var existeCat = await _context.Categories.AnyAsync(x => x.Id.Equals(id));
 
-            if(!existeCat)
+            if (!existeCat)
             {
                 return NotFound();
             }
@@ -61,7 +63,7 @@ namespace NetConfAPI.Controllers
         {
             var categoryToDelete = await _context.Categories.FindAsync(id);
 
-            if(categoryToDelete == null)
+            if (categoryToDelete == null)
             {
                 return NotFound();
             }

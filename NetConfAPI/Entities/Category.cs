@@ -15,5 +15,13 @@ namespace NetConfAPI.Entities
         public string Picture { get; set; }
 
         public List<Product> Products { get; set; } = new List<Product>();
+
+        public static implicit operator CategoryDTO(Category category)
+        {
+            return new CategoryDTO(category.Id, category.Name, category.Description, category.Picture);
+        }
+
     }
+
+    public record CategoryDTO(int Id, string Name, string Description, string Picture);
 }
